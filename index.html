@@ -98,12 +98,13 @@ table.mt1 td select{text-align-last:center}
 <div class="tabs"><button id="tRekod" class="on">📋 Rekod</button><button id="tAnal" hidden>📊 Analisis Laporan</button><button id="tUrus" hidden>⚙️ Urus Senarai</button><button id="btnAdmin" class="ghost" style="margin-left:auto">🔒 Mod Admin</button></div>
 <div class="bar rk">
   <button class="add" id="add">＋ Tambah Rekod</button>
+  <button id="saveAll" style="background:#2e9e5b">💾 Simpan Rekod</button>
   <button id="csv">⬇ Eksport CSV</button>
   <button id="xlsx">⬇ Eksport Excel</button>
   <button id="pdf">📄 Muat Turun PDF (Borang)</button>
   <button class="ghost" id="clear">Kosongkan</button>
 </div>
-<div class="vw rk"><b>📅 Paparan:</b> <select id="vMode"><option value="hari">Hari ini</option><option value="tarikh">Pilih tarikh</option><option value="semua">Semua rekod</option></select> <input type="date" id="vTarikh" hidden> <span id="vInfo"></span></div>
+<div class="vw rk"><b>📅 Paparan:</b> <select id="vMode"><option value="hari">Hari ini</option><option value="tarikh">Pilih tarikh</option><option value="semua" selected>Semua rekod</option></select> <input type="date" id="vTarikh" hidden> <span id="vInfo"></span></div>
 <div class="stats rk" id="stats"></div>
 <div class="flt">
   <b>🔎 Tapisan (muat turun dan analisis)</b>
@@ -117,7 +118,7 @@ table.mt1 td select{text-align-last:center}
 
 <div class="wrap rk">
 <table class="mt1">
-<colgroup><col style="width:44px"><col style="width:112px"><col style="width:90px"><col style="width:200px"><col style="width:110px"><col style="width:95px"><col style="width:150px"><col><col style="width:44px"></colgroup>
+<colgroup><col style="width:44px"><col style="width:112px"><col style="width:90px"><col style="width:200px"><col style="width:110px"><col style="width:95px"><col style="width:150px"><col><col style="width:78px"></colgroup>
 <thead><tr>
 <th>Bil.</th><th>Tarikh</th><th>Masa</th><th>Guru</th><th>Mata Pelajaran</th><th>Kelas</th>
 <th>Elemen Teras Karakter</th><th>Aktiviti / Catatan</th><th></th>
@@ -190,6 +191,7 @@ function loadFromSheet(){
     if(Array.isArray(res.rows)){
       data.rows=res.rows.map(function(r){
         if(!r.id)r.id=uid();
+        r.tarikh=normDate(r.tarikh);
         r.masa=fmtT(r.masa);
         return r;
       });
@@ -209,9 +211,32 @@ function loadFromSheet(){
 }
 function p(n){return String(n).padStart(2,"0")}
 function today(){var d=new Date();return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())}
-function fmtT(s){s=String(s||"").trim();if(!s)return"";var m=s.match(/^(\d{1,2})[:.]?(\d{2})?\s*([ap])?\.?m*\.?$/i);if(!m)return s;
- var h=+m[1],mi=m[2]||"00",ap=m[3]?m[3].toUpperCase():(h>=12&&h<24?"P":"A");
- if(+mi>59||h>24)return s;return p(h%12||12)+":"+mi+" "+ap+"M"}
+function normDate(s){
+  s=String(s||"").trim();
+  if(!s)return"";
+  if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+  var m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if(m)return m[3]+"-"+p(m[2])+"-"+p(m[1]);
+  var d=new Date(s);
+  if(!isNaN(d.getTime()))return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+  return s;
+}
+function fmtT(s){
+  s=String(s||"").trim();
+  if(!s)return"";
+  if(s.indexOf("1899")>=0||s.indexOf("1900")>=0||/^\d{4}-\d{2}-\d{2}T/.test(s)){
+    var d=new Date(s);
+    if(!isNaN(d.getTime())){
+      var h0=d.getHours(),mi0=p(d.getMinutes()),ap0=h0>=12?"PM":"AM";
+      return p(h0%12||12)+":"+mi0+" "+ap0;
+    }
+  }
+  var m=s.match(/^(\d{1,2})[:.]?(\d{2})(?:[:.]\d{2})?\s*([ap])?\.?m*\.?$/i);
+  if(!m)return s;
+  var h=+m[1],mi=m[2]||"00",ap=m[3]?m[3].toUpperCase():(h>=12&&h<24?"P":"A");
+  if(+mi>59||h>24)return s;
+  return p(h%12||12)+":"+mi+" "+ap+"M";
+}
 function now(){var d=new Date();return fmtT(p(d.getHours())+":"+p(d.getMinutes()))}
 function msg(t){document.getElementById("msg").textContent=t}
 function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
@@ -229,7 +254,7 @@ function render(){
     '<td><select data-f="kelas"><option value="">— Pilih —</option>'+(r.kelas&&KELAS.indexOf(r.kelas)<0?KELAS.concat([r.kelas]):KELAS).map(function(k){return '<option'+(r.kelas===k?' selected':'')+'>'+k+'</option>'}).join("")+'</select></td>'+
     '<td style="background:'+(WARNA[r.elemen]||"transparent")+'"><select data-f="elemen">'+opts+'</select></td>'+
     '<td><textarea rows="2" data-f="catatan" placeholder="Aktiviti yang dilaksanakan">'+esc(r.catatan)+'</textarea></td>'+
-    '<td><button class="del" data-del="'+i+'" title="Padam" aria-label="Padam rekod">✕</button></td></tr>';
+    '<td style="white-space:nowrap"><button class="del" style="color:#2e9e5b" data-save="'+i+'" title="Simpan baris ini" aria-label="Simpan rekod">💾</button><button class="del" data-del="'+i+'" title="Padam" aria-label="Padam rekod">✕</button></td></tr>';
   }).join("");
   var em=document.getElementById("empty");em.style.display=idx.length?"none":"block";
   em.textContent=data.rows.length?(vw.mode==="semua"?"Tiada rekod.":"Tiada rekod untuk paparan ini. Tekan “Tambah Rekod” untuk mula. Rekod hari lain tersimpan — pilih “Semua rekod” atau “Pilih tarikh” untuk melihatnya."):"Belum ada rekod. Tekan “Tambah Rekod” — tarikh dan masa diisi secara automatik.";
@@ -256,9 +281,37 @@ tbody.addEventListener("change",function(e){
  if(e.target.dataset.f==="tarikh"){queueSync(rr);if(!inView(rr)){render();msg("Rekod dipindahkan ke tarikh "+fd(rr.tarikh)+" dan tidak lagi dipaparkan di sini.")}}
  if(e.target.dataset.f==="masa"){var v=fmtT(e.target.value);e.target.value=v;rr.masa=v;save();queueSync(rr)}});
 tbody.addEventListener("click",function(e){
+  var sv=e.target.closest("[data-save]");
+  if(sv){
+    var r=data.rows[+sv.dataset.save];
+    if(!r)return;
+    if(!r.guru||!r.kelas||!r.elemen){
+      alert("Sila lengkapkan Nama Guru, Kelas, dan Elemen Teras Karakter sebelum menyimpan.");
+      return;
+    }
+    clearTimeout(syncTimers[r.id]);
+    save();
+    apiPost({action:"upsert",row:r});
+    alert("Rekod berjaya disimpan dan dihantar ke Google Sheet! ✓");
+    return;
+  }
   var b=e.target.closest("[data-del]");if(!b)return;
   if(confirm("Padam rekod ini?")){var rem=data.rows.splice(+b.dataset.del,1)[0];save();render();if(rem&&rem.id)apiPost({action:"delete",id:rem.id})}
 });
+
+document.getElementById("saveAll").onclick=function(){
+  save();
+  var validRows=data.rows.filter(function(r){return r.guru||r.matapelajaran||r.catatan});
+  if(!validRows.length){
+    msg("Tiada rekod untuk disimpan.");
+    return;
+  }
+  validRows.forEach(function(r){
+    clearTimeout(syncTimers[r.id]);
+    apiPost({action:"upsert",row:r});
+  });
+  alert("Semua rekod ("+validRows.length+") telah disimpan ke Google Sheet! ✓");
+};
 document.getElementById("clear").onclick=function(){
   if(data.rows.length&&confirm("Kosongkan semua rekod?")){data.rows=[];save();render();apiPost({action:"clear"})}
 };
@@ -439,7 +492,11 @@ NAMA.forEach(function(n){if(n)set[n]=1});
  $("fHint").textContent=tp==="minggu"?"(pilih mana-mana tarikh dalam minggu itu; Isnin–Ahad)":"";
  $("fCount").textContent="Rekod dipilih: "+getRows().length+" / "+data.rows.length;
  if(!$("vAnalisis").hidden)renderAnal()}
-["fGuru","fKelas","fTempoh","fTarikh","fBln","fThn"].forEach(function(id){$(id).addEventListener("change",refreshFilter);$(id).addEventListener("input",refreshFilter)});
+["fGuru","fKelas","fTempoh","fTarikh","fBln","fThn"].forEach(function(id){
+  $(id).addEventListener("change",function(){refreshFilter();render()});
+  $(id).addEventListener("input",function(){refreshFilter();render()});
+});
+$("rows").addEventListener("input",refreshFilter);
 $("rows").addEventListener("input",refreshFilter);
 
 /* ===== Analisis laporan ===== */
@@ -498,8 +555,33 @@ function renderAnal(){renderAnalOld();var v=$("vAnalisis");if(!getRows().length)
   '<div class="g2">'+bars("👥 Guru (10 teratas)",A.gu.slice(0,10))+bars("📚 Mata Pelajaran (8 teratas)",A.mp)+'</div>'+hm}
 
 /* ===== Paparan harian ===== */
-var vw={mode:"hari",date:""},lastD=today();
-function inView(r){if(vw.mode==="semua"||!r.tarikh)return true;return r.tarikh===(vw.mode==="hari"?today():vw.date)}
+var vw={mode:"semua",date:""},lastD=today();
+function inView(r){
+  if(vw.mode!=="semua"&&r.tarikh){
+    var target=(vw.mode==="hari"?today():vw.date);
+    if(r.tarikh!==target)return false;
+  }
+  var elG=document.getElementById("fGuru");
+  var elK=document.getElementById("fKelas");
+  var elTp=document.getElementById("fTempoh");
+  var elT=document.getElementById("fTarikh");
+  var elB=document.getElementById("fBln");
+  var elTh=document.getElementById("fThn");
+
+  var g=elG?elG.value:"";
+  var k=elK?elK.value:"";
+  var tp=elTp?elTp.value:"";
+  var t=elT?elT.value:"";
+  var mo=(elTh?elTh.value:"")+"-"+(elB?elB.value:"");
+
+  if(g&&(r.guru||"").trim()!==g)return false;
+  if(k&&r.kelas!==k)return false;
+  var d=r.tarikh||"";
+  if(tp==="hari"&&d!==t)return false;
+  if(tp==="minggu"){var wr=weekRange(t);if(!wr||d<wr[0]||d>wr[1])return false;}
+  if(tp==="bulan"&&d.slice(0,7)!==mo)return false;
+  return true;
+}
 function vwInfo(){var m=vw.mode;$("vTarikh").hidden=m!=="tarikh";if(m==="tarikh")$("vTarikh").value=vw.date;
  $("vInfo").textContent=m==="hari"?fd(today())+" — paparan baharu setiap hari; rekod hari lain tersimpan.":m==="semua"?"Menunjukkan semua rekod.":""}
 function vwUpdate(){vw.mode=$("vMode").value;if(vw.mode==="tarikh"&&!vw.date)vw.date=today();vwInfo();render()}
