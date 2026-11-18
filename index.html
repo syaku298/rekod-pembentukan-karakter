@@ -14,13 +14,6 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito","Segoe UI",system-ui,sans-serif;padding:16px}
 h1{margin:0;font-size:1.5rem}
 .sub{color:var(--mut);margin:2px 0 14px;font-size:.95rem}
-.topbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
-.role-box{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
-.role-badge{font-weight:800;font-size:.85rem;padding:4px 10px;border-radius:999px;background:var(--head);color:var(--ink)}
-.role-badge.adm{background:#ff7a59;color:#fff}
-.sync-pill{font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:999px;background:#eef6fb;color:#2b6cb0;border:1px solid #cce3f5}
-.sync-pill.err{background:#ffe8e8;color:#c53030;border-color:#feb2b2}
-.sync-pill.ok{background:#e6f7ed;color:#226b42;border-color:#b7ebc6}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
 .bar input[type=text],.bar select{padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
 button{font:inherit;border:0;border-radius:10px;padding:8px 14px;cursor:pointer;background:var(--acc2);color:#fff;font-weight:700}
@@ -44,7 +37,7 @@ td.n{text-align:center;color:var(--mut);width:44px}
 .flt span[hidden]{display:none}.flt small{color:var(--mut)}
 .cnt{margin-left:auto;font-weight:700;color:var(--acc)}
 [hidden]{display:none!important}
-.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.tabs button{background:var(--card);color:var(--ink);border:1px solid var(--line)}.tabs button.on{background:var(--acc2);color:#fff;border-color:var(--acc2)}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button{background:var(--card);color:var(--ink);border:1px solid var(--line)}.tabs button.on{background:var(--acc2);color:#fff;border-color:var(--acc2)}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
 .cd{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}.cd b{display:block;font-size:1.5rem;color:var(--acc)}.cd span{color:var(--mut);font-size:.82rem}
 .ag{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
@@ -87,44 +80,19 @@ table.mt1 td select{text-align-last:center}
 .sg div{padding:8px 12px;cursor:pointer;font-size:.92rem}
 .sg div.on,.sg div:hover{background:var(--head)}
 .sg b{color:var(--acc)}
-.modal-bg{position:fixed;inset:0;background:rgba(45,42,62,.5);display:grid;place-items:center;z-index:100;padding:16px}
-.modal-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:380px;width:100%;box-shadow:0 12px 30px rgba(0,0,0,.2)}
-.modal-card h3{margin:0 0 6px;font-size:1.15rem}
-.modal-card p{margin:0 0 12px;color:var(--mut);font-size:.88rem}
-.modal-card input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;margin-bottom:12px}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end}
-.badge-ok{display:inline-block;padding:3px 9px;border-radius:999px;background:#d6f0d0;color:#1e5c1a;font-weight:700;font-size:.8rem}
-.badge-no{display:inline-block;padding:3px 9px;border-radius:999px;background:#ffd6e0;color:#8a1c36;font-weight:700;font-size:.8rem}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div>
-    <h1>🌟 Rekod Pelaksanaan Pembentukan Karakter</h1>
-    <p class="sub">Tahun 1 · Sesi 2027 — <span id="subRole">Mod Pengguna (Guru Mata Pelajaran)</span></p>
-  </div>
-  <div class="role-box">
-    <span class="sync-pill" id="syncBadge">☁️ Menyambung Google Sheet...</span>
-    <span class="role-badge" id="roleBadge">👩‍🏫 Pengguna (Cikgu)</span>
-    <button id="btnAdminLogin" class="ghost">🔐 Masuk sebagai Admin</button>
-    <button id="btnAdminLogout" class="ghost" hidden>🚪 Keluar Admin</button>
-  </div>
-</div>
+<h1>🌟 Rekod Pelaksanaan Pembentukan Karakter</h1>
+<p class="sub">Tahun 1 · Sesi 2027 — Guru Mata Pelajaran</p>
 
-<div class="tabs">
-  <button id="tRekod" class="on">📋 Rekod</button>
-  <button id="tAnal" class="adm-only" hidden>📊 Analisis Laporan</button>
-  <button id="tGuruStatus" class="adm-only" hidden>👩‍🏫 Status Guru Key-In</button>
-  <button id="tUrus" class="adm-only" hidden>⚙️ Urus Senarai</button>
-</div>
-
+<div class="tabs"><button id="tRekod" class="on">📋 Rekod</button><button id="tAnal">📊 Analisis Laporan</button><button id="tUrus" hidden>⚙️ Urus Senarai</button></div>
 <div class="bar rk">
   <button class="add" id="add">＋ Tambah Rekod</button>
-  <button class="ghost" id="btnRefresh">🔄 Muat Semula Data</button>
-  <button id="csv" class="adm-only" hidden>⬇ Eksport CSV (Semua Data)</button>
-  <button id="xlsx" class="adm-only" hidden>⬇ Eksport Excel (Semua Data)</button>
+  <button id="csv">⬇ Eksport CSV</button>
+  <button id="xlsx">⬇ Eksport Excel</button>
   <button id="pdf">📄 Muat Turun PDF (Borang)</button>
-  <button class="ghost adm-only" id="clear" hidden>Kosongkan</button>
+  <button class="ghost" id="clear">Kosongkan</button>
 </div>
 <div class="vw rk"><b>📅 Paparan:</b> <select id="vMode"><option value="hari">Hari ini</option><option value="tarikh">Pilih tarikh</option><option value="semua">Semua rekod</option></select> <input type="date" id="vTarikh" hidden> <span id="vInfo"></span></div>
 <div class="stats rk" id="stats"></div>
@@ -147,124 +115,23 @@ table.mt1 td select{text-align-last:center}
 </tr></thead>
 <tbody id="rows"></tbody>
 </table>
-<div class="empty" id="empty">Memuatkan rekod daripada Google Sheet...</div>
+<div class="empty" id="empty">Belum ada rekod. Tekan “Tambah Rekod” — tarikh dan masa diisi secara automatik.</div>
 </div>
 <div class="msg rk" id="msg"></div>
 <div class="bar" id="aBar" hidden><button id="pdfA">📄 Muat Turun PDF Analisis</button></div>
 <div id="vAnalisis" hidden></div>
-<div id="vGuruStatus" hidden></div>
 <div id="vUrus" hidden></div>
 
-<div class="modal-bg" id="pinModal" hidden>
-  <div class="modal-card">
-    <h3>🔐 Akses Admin</h3>
-    <p>Masukkan kata laluan PIN Admin untuk melihat analisis data, status guru key-in, dan muat turun semua data. (PIN lalai: <b>1234</b>)</p>
-    <input type="password" id="pinInput" placeholder="Masukkan PIN Admin" autocomplete="off">
-    <div class="msg" id="pinErr" style="color:#d94a4a;margin:0 0 8px"></div>
-    <div class="modal-actions">
-      <button class="ghost" id="pinCancel">Batal</button>
-      <button class="add" id="pinSubmit">Masuk Admin</button>
-    </div>
-  </div>
-</div>
-
 <script>
-var GAS_URL = "https://script.google.com/macros/s/AKfycbwCGdtIAvg5VLr0T3m2CV6KeXimxbJpg-e5KDHRM3tEZdJv-LQsGRK_YJrSbYpspcSx_A/exec";
 var KELAS=["1 Alba","1 Bonia","1 Casio","1 Diesel","1 Emporio","1 Fossil","1 Garmin","1 Hublot","1 Longines","1 Montblanc","1 Orient","1 Polo","1 Quartz","1 Rolex","1 Seiko","1 Tissot"];
 var ELEMEN=["Penyayang","Berdaya Tahan","Berupaya Memimpin","Warganegara Aktif"];
 var WARNA={"Penyayang":"var(--c1)","Berdaya Tahan":"var(--c2)","Berupaya Memimpin":"var(--c3)","Warganegara Aktif":"var(--c4)"};
-var KEY="rekod-pk-2027", data={rows:[],guru:"",kelas:"",adminPin:"1234"};
+var KEY="rekod-pk-2027", data={rows:[],guru:"",kelas:""};
 try{var s=localStorage.getItem(KEY);if(s)data=JSON.parse(s)}catch(e){}
-if(!data||!data.rows)data={rows:[],guru:"",kelas:"",adminPin:"1234"};
-if(!data.adminPin)data.adminPin="1234";
-data.rows.forEach(function(r,idx){
-  r.masa=fmtT(r.masa);
-  if(!r.id) r.id = "R-" + Date.now() + "-" + idx;
-});
+if(!data||!data.rows)data={rows:[],guru:"",kelas:""};
+data.rows.forEach(function(r){r.masa=fmtT(r.masa)});
 if(data.kl&&data.kl.length)KELAS=data.kl.slice();
-
-var isAdmin = sessionStorage.getItem("pk_admin_mode") === "1";
-var activeTab = "rekod";
-var saveTimer = null;
-var isSaving = false;
-
-function setSyncState(state, text){
-  var b = $("syncBadge");
-  if(!b) return;
-  b.className = "sync-pill" + (state === "ok" ? " ok" : state === "err" ? " err" : "");
-  b.textContent = text;
-}
-
-function saveLocal(){
-  try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}
-}
-
-function syncToCloud(){
-  if(!GAS_URL) return;
-  isSaving = true;
-  setSyncState("busy", "⏳ Menyimpan ke Google Sheet...");
-  fetch(GAS_URL, {
-    method: "POST",
-    headers: {"Content-Type": "text/plain;charset=utf-8"},
-    body: JSON.stringify({ rows: data.rows })
-  })
-  .then(function(res){ return res.json(); })
-  .then(function(res){
-    isSaving = false;
-    if(res && res.status === "saved"){
-      setSyncState("ok", "☁️ Disimpan ke Google Sheet (" + res.count + " rekod)");
-    } else {
-      setSyncState("err", "⚠️ Ralat simpan ke Sheet");
-    }
-  })
-  .catch(function(){
-    isSaving = false;
-    setSyncState("err", "⚠️ Luar talian (disimpan lokal)");
-  });
-}
-
-function save(immediate){
-  saveLocal();
-  clearTimeout(saveTimer);
-  if(immediate){
-    syncToCloud();
-  } else {
-    setSyncState("busy", "✏️ Menunggu selesai menaip...");
-    saveTimer = setTimeout(syncToCloud, 1200);
-  }
-}
-
-function loadFromCloud(manual){
-  if(!GAS_URL) return;
-  if(isSaving) return;
-  setSyncState("busy", "🔄 Memuatkan dari Google Sheet...");
-  fetch(GAS_URL)
-  .then(function(res){ return res.json(); })
-  .then(function(res){
-    if(res && res.status === "ok" && Array.isArray(res.rows)){
-      res.rows.forEach(function(r, idx){
-        r.masa = fmtT(r.masa);
-        if(!r.id) r.id = "R-SHEET-" + idx;
-      });
-      data.rows = res.rows;
-      saveLocal();
-      render();
-      setSyncState("ok", "☁️ Segerak dengan Google Sheet (" + data.rows.length + " rekod)");
-      if(manual) msg("Data terkini berjaya dimuatkan dari Google Sheet.");
-    } else {
-      setSyncState("err", "⚠️ Format data Sheet tidak sah");
-    }
-  })
-  .catch(function(){
-    setSyncState("err", "⚠️ Gagal sambung Google Sheet (paparan lokal)");
-    render();
-  });
-}
-
-function genId(){
-  return "R-" + Date.now() + "-" + Math.floor(Math.random()*10000);
-}
-
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
 function p(n){return String(n).padStart(2,"0")}
 function today(){var d=new Date();return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())}
 function fmtT(s){s=String(s||"").trim();if(!s)return"";var m=s.match(/^(\d{1,2})[:.]?(\d{2})?\s*([ap])?\.?m*\.?$/i);if(!m)return s;
@@ -273,62 +140,6 @@ function fmtT(s){s=String(s||"").trim();if(!s)return"";var m=s.match(/^(\d{1,2})
 function now(){var d=new Date();return fmtT(p(d.getHours())+":"+p(d.getMinutes()))}
 function msg(t){document.getElementById("msg").textContent=t}
 function esc(t){return String(t==null?"":t).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
-
-/* ===== Pengurusan Peranan (Admin vs Pengguna) ===== */
-function applyRoleUI(){
-  var badge = $("roleBadge");
-  var subRole = $("subRole");
-  if(isAdmin){
-    badge.textContent = "🛡️ Mod Admin";
-    badge.className = "role-badge adm";
-    subRole.textContent = "Mod Admin (Analisis & Pemantauan Semua Guru)";
-    $("btnAdminLogin").hidden = true;
-    $("btnAdminLogout").hidden = false;
-  } else {
-    badge.textContent = "👩‍🏫 Pengguna (Cikgu)";
-    badge.className = "role-badge";
-    subRole.textContent = "Mod Pengguna (Guru Mata Pelajaran)";
-    $("btnAdminLogin").hidden = false;
-    $("btnAdminLogout").hidden = true;
-    if(activeTab !== "rekod") activeTab = "rekod";
-  }
-  document.querySelectorAll(".adm-only").forEach(function(el){
-    el.hidden = !isAdmin;
-  });
-  showTab(activeTab);
-}
-
-$("btnAdminLogin").onclick = function(){
-  $("pinInput").value = "";
-  $("pinErr").textContent = "";
-  $("pinModal").hidden = false;
-  setTimeout(function(){ $("pinInput").focus(); }, 50);
-};
-$("pinCancel").onclick = function(){ $("pinModal").hidden = true; };
-function tryAdminLogin(){
-  var val = $("pinInput").value.trim();
-  if(val === (data.adminPin || "1234")){
-    isAdmin = true;
-    sessionStorage.setItem("pk_admin_mode", "1");
-    $("pinModal").hidden = true;
-    applyRoleUI();
-    loadFromCloud(false);
-    msg("Berjaya log masuk sebagai Admin.");
-  } else {
-    $("pinErr").textContent = "PIN tidak sah. Sila cuba lagi (PIN lalai: 1234).";
-  }
-}
-$("pinSubmit").onclick = tryAdminLogin;
-$("pinInput").addEventListener("keydown", function(e){
-  if(e.key === "Enter"){ e.preventDefault(); tryAdminLogin(); }
-  else if(e.key === "Escape"){ $("pinModal").hidden = true; }
-});
-$("btnAdminLogout").onclick = function(){
-  isAdmin = false;
-  sessionStorage.removeItem("pk_admin_mode");
-  applyRoleUI();
-  msg("Anda kini berada dalam paparan Pengguna (Cikgu).");
-};
 
 function render(){
   var tb=document.getElementById("rows");
@@ -346,7 +157,7 @@ function render(){
     '<td><button class="del" data-del="'+i+'" title="Padam" aria-label="Padam rekod">✕</button></td></tr>';
   }).join("");
   var em=document.getElementById("empty");em.style.display=idx.length?"none":"block";
-  em.textContent=data.rows.length?(vw.mode==="semua"?"Tiada rekod.":"Tiada rekod untuk paparan ini. Tekan “Tambah Rekod” untuk mula. Rekod hari lain tersimpan di Google Sheet — pilih “Semua rekod” atau “Pilih tarikh” untuk melihatnya."):"Belum ada rekod. Tekan “Tambah Rekod” — tarikh dan masa diisi secara automatik.";
+  em.textContent=data.rows.length?(vw.mode==="semua"?"Tiada rekod.":"Tiada rekod untuk paparan ini. Tekan “Tambah Rekod” untuk mula. Rekod hari lain tersimpan — pilih “Semua rekod” atau “Pilih tarikh” untuk melihatnya."):"Belum ada rekod. Tekan “Tambah Rekod” — tarikh dan masa diisi secara automatik.";
   refreshFilter();
   var c={};idx.forEach(function(j){var r=data.rows[j];if(r.elemen)c[r.elemen]=(c[r.elemen]||0)+1});
   document.getElementById("stats").innerHTML='<span class="chip" style="background:var(--head)">Jumlah: '+idx.length+'</span>'+
@@ -354,39 +165,31 @@ function render(){
 }
 
 document.getElementById("add").onclick=function(){
-  data.rows.push({id:genId(),tarikh:today(),masa:now(),guru:data.guru||"",matapelajaran:"",kelas:data.kelas||"",elemen:"",catatan:""});
-  save(true);if($("vMode").value!=="hari"){$("vMode").value="hari";vwUpdate()}else render();msg("Rekod ditambah & disimpan ke Google Sheet.");
-  var t=document.getElementById("rows").lastElementChild;if(t){var f=t.querySelector('[data-f="guru"]');if(f)f.focus()}
-};
-document.getElementById("btnRefresh").onclick=function(){
-  loadFromCloud(true);
+  data.rows.push({tarikh:today(),masa:now(),guru:data.guru||"",matapelajaran:"",kelas:data.kelas||"",elemen:"",catatan:""});
+  save();if($("vMode").value!=="hari"){$("vMode").value="hari";vwUpdate()}else render();msg("Rekod ditambah — tarikh & masa diisi automatik.");
+  var t=document.getElementById("rows").lastElementChild;if(t){var f=t.querySelector('[data-f="matapelajaran"]');if(f)f.focus()}
 };
 var tbody=document.getElementById("rows");
 tbody.addEventListener("input",function(e){
   var tr=e.target.closest("tr");if(!tr||!e.target.dataset.f)return;
-  data.rows[+tr.dataset.i][e.target.dataset.f]=e.target.value;save(false);
+  data.rows[+tr.dataset.i][e.target.dataset.f]=e.target.value;save();
 });
-tbody.addEventListener("change",function(e){
-  if(e.target.dataset.f==="elemen"){render();save(true);}
-  if(e.target.dataset.f==="kelas"){save(true);}
-  if(e.target.dataset.f==="tarikh"){var rr=data.rows[+e.target.closest("tr").dataset.i];save(true);if(rr&&!inView(rr)){render();msg("Rekod dipindahkan ke tarikh "+fd(rr.tarikh)+" dan tidak lagi dipaparkan di sini.")}}
-  if(e.target.dataset.f==="masa"){var v=fmtT(e.target.value);e.target.value=v;data.rows[+e.target.closest("tr").dataset.i].masa=v;save(true)}
-});
+tbody.addEventListener("change",function(e){if(e.target.dataset.f==="elemen")render();
+ if(e.target.dataset.f==="tarikh"){var rr=data.rows[+e.target.closest("tr").dataset.i];if(rr&&!inView(rr)){render();msg("Rekod dipindahkan ke tarikh "+fd(rr.tarikh)+" dan tidak lagi dipaparkan di sini.")}}
+ if(e.target.dataset.f==="masa"){var v=fmtT(e.target.value);e.target.value=v;data.rows[+e.target.closest("tr").dataset.i].masa=v;save()}});
 tbody.addEventListener("click",function(e){
   var b=e.target.closest("[data-del]");if(!b)return;
-  if(confirm("Padam rekod ini dari sistem & Google Sheet?")){data.rows.splice(+b.dataset.del,1);save(true);render()}
+  if(confirm("Padam rekod ini?")){data.rows.splice(+b.dataset.del,1);save();render()}
 });
 document.getElementById("clear").onclick=function(){
-  if(!isAdmin)return;
-  if(data.rows.length&&confirm("AMARAN: Ini akan memadamkan SEMUA rekod di Google Sheet juga. Teruskan?")){data.rows=[];save(true);render()}
+  if(data.rows.length&&confirm("Kosongkan semua rekod?")){data.rows=[];save();render()}
 };
 
 var HEAD=["Bil.","Tarikh","Masa","Guru","Mata Pelajaran","Kelas","Elemen Teras Karakter","Aktiviti / Catatan"];
-function matrix(rowsList){return (rowsList||getRows()).map(function(r,i){return [i+1,r.tarikh,r.masa,r.guru,r.matapelajaran,r.kelas,r.elemen,r.catatan]})}
-function toCSV(rowsList){
+function matrix(){return getRows().map(function(r,i){return [i+1,r.tarikh,r.masa,r.guru,r.matapelajaran,r.kelas,r.elemen,r.catatan]})}
+function toCSV(){
   var q=function(v){return '"'+String(v==null?"":v).replace(/"/g,'""')+'"'};
-  return "﻿"+[HEAD].concat(matrix(rowsList)).map(function(r){return r.map(q).join(",")}).join("
-");
+  return "\uFEFF"+[HEAD].concat(matrix()).map(function(r){return r.map(q).join(",")}).join("\r\n");
 }
 function offer(name, payload) {
   try {
@@ -410,17 +213,13 @@ function offer(name, payload) {
   }
 }
 document.getElementById("csv").onclick=function(){
-  if(!isAdmin)return;
-  var rowsToExport = getRows().length ? getRows() : data.rows;
-  if(!rowsToExport.length){msg("Tiada rekod untuk dimuat turun.");return}
-  offer("rekod-pembentukan-karakter-2027.csv",toCSV(rowsToExport));
+  if(!getRows().length){msg("Tiada rekod sepadan dengan pilihan muat turun.");return}
+  offer("rekod-pembentukan-karakter-2027.csv",toCSV());
 };
 document.getElementById("xlsx").onclick=function(){
-  if(!isAdmin)return;
-  var rowsToExport = getRows().length ? getRows() : data.rows;
-  if(!rowsToExport.length){msg("Tiada rekod untuk dimuat turun.");return}
+  if(!getRows().length){msg("Tiada rekod sepadan dengan pilihan muat turun.");return}
   if(!window.XLSX){msg("Pustaka Excel tidak dapat dimuatkan; sila guna CSV (boleh dibuka dalam Excel).");return}
-  var ws=XLSX.utils.aoa_to_sheet([HEAD].concat(matrix(rowsToExport)));
+  var ws=XLSX.utils.aoa_to_sheet([HEAD].concat(matrix()));
   ws["!cols"]=[{wch:6},{wch:12},{wch:8},{wch:22},{wch:20},{wch:12},{wch:24},{wch:40}];
   var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Rekod PK Tahun 1");
   offer("rekod-pembentukan-karakter-2027.xlsx",XLSX.write(wb,{type:"array",bookType:"xlsx"}));
@@ -488,8 +287,7 @@ Nelly binti Yawasang
 Umairah binti Khalid
 Nur Shadia Sofea binti Mohd Khuzaidi
 Nur Adilah binti Muhd Jamil
-Nuramirah Aini binti Zul`.split("
-").map(function(s){return s.trim()});
+Nuramirah Aini binti Zul`.split("\n").map(function(s){return s.trim()});
 function norm(s){return s.toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
 if(data.gl&&data.gl.length)NAMA=data.gl.slice();
 var NN=NAMA.map(function(n){return norm(n).split(" ")});
@@ -528,7 +326,6 @@ document.addEventListener("keydown",function(e){if(!sgIn||sg.style.display==="no
 sg.addEventListener("mousedown",function(e){e.preventDefault();var d=e.target.closest("[data-i]");if(d)sgPick(+d.dataset.i)});
 window.addEventListener("scroll",sgHide,true);
 document.addEventListener("click",function(e){if(!isGuru(e.target)&&!sg.contains(e.target))sgHide()});
-
 /* ===== Penapis muat turun ===== */
 var $=function(i){return document.getElementById(i)};
 var BLN=["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
@@ -562,12 +359,11 @@ function refreshFilter(){var g=$("fGuru"),cur=g.value,set={};
  var tp=$("fTempoh").value;$("fHari").hidden=!(tp==="hari"||tp==="minggu");$("fBulan").hidden=tp!=="bulan";
  $("fHint").textContent=tp==="minggu"?"(pilih mana-mana tarikh dalam minggu itu; Isnin–Ahad)":"";
  $("fCount").textContent="Rekod dipilih: "+getRows().length+" / "+data.rows.length;
- if(!$("vAnalisis").hidden)renderAnal();
- if(!$("vGuruStatus").hidden)renderGuruStatus();}
+ if(!$("vAnalisis").hidden)renderAnal()}
 ["fGuru","fKelas","fTempoh","fTarikh","fBln","fThn"].forEach(function(id){$(id).addEventListener("change",refreshFilter);$(id).addEventListener("input",refreshFilter)});
 $("rows").addEventListener("input",refreshFilter);
 
-/* ===== Analisis laporan (Admin Sahaja) ===== */
+/* ===== Analisis laporan ===== */
 var BAR={"Penyayang":"#ff8fa8","Berdaya Tahan":"#6cc26a","Berupaya Memimpin":"#6b9bff","Warganegara Aktif":"#ffc83d"};
 function bars(title,items,col){var mx=Math.max.apply(null,items.map(function(x){return x[1]}).concat([1])),tot=items.reduce(function(a,x){return a+x[1]},0);
  return '<section class="ac"><h3>'+title+'</h3>'+(items.length?items.map(function(x){var pc=tot?Math.round(x[1]/tot*100):0;
@@ -601,36 +397,8 @@ function renderAnalOld(){var R=getRows(),v=$("vAnalisis");
  v.innerHTML='<div class="cards"><div class="cd"><b>'+R.length+'</b><span>Jumlah rekod</span></div><div class="cd"><b>'+Object.keys(cg).length+'</b><span>Guru terlibat</span></div><div class="cd"><b>'+ka.length+' / '+KELAS.length+'</b><span>Kelas ada rekod</span></div><div class="cd"><b style="font-size:1.05rem">'+(tot>0?esc(top[0]):"-")+'</b><span>Elemen terbanyak</span></div></div>'+
   '<section class="ac"><h3>💡 Cerapan</h3><ul class="ins">'+ins.map(function(t){return'<li>'+t+'</li>'}).join("")+'</ul></section>'+
   '<div class="ag">'+bars("Rekod mengikut Elemen Teras Karakter",el,BAR)+bars("Rekod mengikut Bulan",bl)+bars("Rekod mengikut Kelas",kl)+bars("Rekod mengikut Guru (10 teratas)",gu.slice(0,10))+bars("Mata Pelajaran (8 teratas)",mp)+'</div>'+hm}
-
-function showTab(tab){
-  if(!isAdmin && tab !== "rekod") tab = "rekod";
-  activeTab = tab;
-  var isRek = tab === "rekod";
-  var isAna = tab === "analisis";
-  var isGur = tab === "guruStatus";
-  var isUru = tab === "urus";
-
-  $("tRekod").className = isRek ? "on" : "";
-  $("tAnal").className = "adm-only" + (isAna ? " on" : "");
-  $("tGuruStatus").className = "adm-only" + (isGur ? " on" : "");
-  $("tUrus").className = "adm-only" + (isUru ? " on" : "");
-
-  document.querySelectorAll(".rk").forEach(function(e){ e.hidden = !isRek; });
-  document.querySelector(".flt").hidden = isUru;
-  $("vAnalisis").hidden = !isAna;
-  $("aBar").hidden = !isAna;
-  $("vGuruStatus").hidden = !isGur;
-  $("vUrus").hidden = !isUru;
-
-  if(isAna) renderAnal();
-  if(isGur) renderGuruStatus();
-  if(isUru) renderUrus();
-}
-
-$("tRekod").onclick=function(){showTab("rekod")};
-$("tAnal").onclick=function(){showTab("analisis")};
-$("tGuruStatus").onclick=function(){showTab("guruStatus")};
-$("tUrus").onclick=function(){showTab("urus")};
+function showTab(a){var u=a==="urus";a=a===true;$("tUrus").className=u?"on":"";$("vUrus").hidden=!u;document.querySelector(".flt").hidden=u;if(u)renderUrus();document.querySelectorAll(".rk").forEach(function(e){e.hidden=a||u});$("vAnalisis").hidden=!a;$("aBar").hidden=!a;$("tRekod").className=(a||u)?"":"on";$("tAnal").className=a?"on":"";if(a)renderAnal()}
+$("tRekod").onclick=function(){showTab(false)};$("tAnal").onclick=function(){showTab(true)};
 
 function renderAnal(){renderAnalOld();var v=$("vAnalisis");if(!getRows().length)return;
  var A=AN,R=A.R,tot=A.tot,sum=A.el.reduce(function(a,x){return a+x[1]},0);
@@ -650,103 +418,51 @@ function renderAnal(){renderAnalOld();var v=$("vAnalisis");if(!getRows().length)
  v.innerHTML='<div class="dt"><h2>📊 Dashboard Analisis</h2><p>'+esc(filterDesc())+'</p></div>'+kh+'<div class="g2">'+dh+ih+'</div>'+th+kh2+
   '<div class="g2">'+bars("👥 Guru (10 teratas)",A.gu.slice(0,10))+bars("📚 Mata Pelajaran (8 teratas)",A.mp)+'</div>'+hm}
 
-/* ===== Senarai Semua Cikgu Key-In (Admin Sahaja) ===== */
-function renderGuruStatus(){
-  var R = getRows();
-  var stats = {};
-  R.forEach(function(r){
-    var g = (r.guru || "").trim() || "(Tiada Nama Guru)";
-    if(!stats[g]) stats[g] = { count: 0, lastDate: "", classes: {} };
-    stats[g].count++;
-    if(r.tarikh && r.tarikh > stats[g].lastDate) stats[g].lastDate = r.tarikh;
-    if(r.kelas) stats[g].classes[r.kelas] = true;
-  });
-
-  var allTeachers = NAMA.slice();
-  Object.keys(stats).forEach(function(g){
-    if(g !== "(Tiada Nama Guru)" && !allTeachers.some(function(n){ return n.toLowerCase() === g.toLowerCase(); })){
-      allTeachers.push(g);
-    }
-  });
-  allTeachers.sort(function(a,b){ return a.localeCompare(b); });
-
-  var sudahCount = 0;
-  var rowsHtml = allTeachers.map(function(name, i){
-    var matchedKey = Object.keys(stats).find(function(k){ return k.toLowerCase() === name.toLowerCase(); });
-    var info = matchedKey ? stats[matchedKey] : null;
-    var cnt = info ? info.count : 0;
-    if(cnt > 0) sudahCount++;
-    var clsList = info ? Object.keys(info.classes).sort().join(", ") : "—";
-    var lastDt = info && info.lastDate ? fd(info.lastDate) : "—";
-    var statusBadge = cnt > 0
-      ? '<span class="badge-ok">✅ Sudah Key-In ('+cnt+')</span>'
-      : '<span class="badge-no">⏳ Belum Ada Rekod</span>';
-    return '<tr><td class="n">'+(i+1)+'</td><td style="padding:8px 10px;text-align:left;font-weight:600">'+esc(name)+'</td><td style="padding:8px;text-align:center">'+statusBadge+'</td><td style="padding:8px;text-align:center"><b>'+cnt+'</b></td><td style="padding:8px;text-align:center">'+lastDt+'</td><td style="padding:8px;text-align:left;font-size:.85rem;color:var(--mut)">'+esc(clsList || "—")+'</td></tr>';
-  }).join("");
-
-  if(stats["(Tiada Nama Guru)"]){
-    var uInfo = stats["(Tiada Nama Guru)"];
-    rowsHtml += '<tr><td class="n">*</td><td style="padding:8px 10px;text-align:left;color:#d94a4a;font-weight:600">(Rekod Tanpa Nama Guru)</td><td style="padding:8px;text-align:center"><span class="badge-no">⚠️ Perlu Semakan</span></td><td style="padding:8px;text-align:center"><b>'+uInfo.count+'</b></td><td style="padding:8px;text-align:center">'+fd(uInfo.lastDate)+'</td><td style="padding:8px;text-align:left;font-size:.85rem">'+esc(Object.keys(uInfo.classes).join(", ") || "—")+'</td></tr>';
-  }
-
-  var belumCount = allTeachers.length - sudahCount;
-  $("vGuruStatus").innerHTML =
-    '<div class="dt"><h2>👩‍🏫 Senarai & Status Guru Key-In</h2><p>'+esc(filterDesc())+'</p></div>'+
-    '<div class="cards">'+
-      '<div class="cd"><b>'+allTeachers.length+'</b><span>Jumlah Senarai Guru</span></div>'+
-      '<div class="cd"><b style="color:#2e8b57">'+sudahCount+'</b><span>Guru Sudah Key-In</span></div>'+
-      '<div class="cd"><b style="color:#d94a4a">'+belumCount+'</b><span>Guru Belum Key-In</span></div>'+
-      '<div class="cd"><b>'+R.length+'</b><span>Jumlah Keseluruhan Rekod</span></div>'+
-    '</div>'+
-    '<div class="wrap"><table style="min-width:760px"><thead><tr><th style="width:48px;text-align:center">Bil.</th><th>Nama Guru</th><th style="text-align:center">Status</th><th style="text-align:center">Bil. Rekod</th><th style="text-align:center">Tarikh Terkini</th><th>Kelas Terlibat</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>';
-}
-
 /* ===== Paparan harian ===== */
 var vw={mode:"hari",date:""},lastD=today();
 function inView(r){if(vw.mode==="semua"||!r.tarikh)return true;return r.tarikh===(vw.mode==="hari"?today():vw.date)}
 function vwInfo(){var m=vw.mode;$("vTarikh").hidden=m!=="tarikh";if(m==="tarikh")$("vTarikh").value=vw.date;
- $("vInfo").textContent=m==="hari"?fd(today())+" — paparan baharu setiap hari; rekod hari lain tersimpan di Google Sheet.":m==="semua"?"Menunjukkan semua rekod.":""}
+ $("vInfo").textContent=m==="hari"?fd(today())+" — paparan baharu setiap hari; rekod hari lain tersimpan.":m==="semua"?"Menunjukkan semua rekod.":""}
 function vwUpdate(){vw.mode=$("vMode").value;if(vw.mode==="tarikh"&&!vw.date)vw.date=today();vwInfo();render()}
 $("vMode").onchange=vwUpdate;
 $("vTarikh").onchange=function(e){vw.date=e.target.value;render()};
 vwInfo();
 setInterval(function(){var t=today();if(t!==lastD){lastD=t;vwInfo();render()}},60000);
 
-/* ===== Urus senarai guru & kelas + Tukar PIN Admin ===== */
+/* ===== Urus senarai guru & kelas ===== */
 var uNote="";
 function fillKF(){var s=$("fKelas"),c=s.value;s.innerHTML='<option value="">Semua kelas</option>'+KELAS.map(function(k){return'<option>'+k+'</option>'}).join("");s.value=KELAS.indexOf(c)>=0?c:""}
 function listCard(title,key,items,ph){return '<section class="ac"><h3>'+title+' ('+items.length+')</h3><div class="ur"><input type="text" id="in_'+key+'" placeholder="'+ph+'" autocomplete="off"><button class="add" data-add="'+key+'">＋ Tambah</button></div><div class="ul">'+
  items.map(function(x,i){return'<div class="ui"><span>'+esc(x)+'</span><button class="del" data-rm="'+key+'" data-i="'+i+'" title="Buang">✕</button></div>'}).join("")+'</div></section>'}
-function renderUrus(){
-  $("vUrus").innerHTML='<div class="dt"><h2>⚙️ Urus Senarai & Tetapan Admin</h2><p>Tambah atau buang nama guru dan kelas untuk pilihan dropdown, atau kemas kini kata laluan PIN Admin.</p></div><div class="msg">'+esc(uNote)+'</div>'+
-  '<section class="ac" style="max-width:460px"><h3>🔐 Tukar PIN Admin</h3><div class="ur"><input type="text" id="in_pin" placeholder="PIN baharu (semasa: '+esc(data.adminPin)+')" autocomplete="off"><button class="add" id="savePinBtn">Simpan PIN</button></div></section>'+
-  '<div class="g2">'+listCard("👥 Senarai Guru","g",NAMA,"Nama guru baharu")+listCard("🏫 Senarai Kelas","k",KELAS,"cth. 1 Citizen")+'</div>';
-  $("savePinBtn").onclick = function(){
-    var np = $("in_pin").value.trim();
-    if(!np){ uNote = "Sila masukkan PIN baharu."; renderUrus(); return; }
-    data.adminPin = np;
-    saveLocal();
-    uNote = "PIN Admin berjaya dikemas kini kepada: " + np;
-    renderUrus();
-  };
-}
-function saveLists(){data.gl=NAMA.slice();data.kl=KELAS.slice();NN=NAMA.map(function(n){return norm(n).split(" ")});saveLocal();render();fillKF();refreshFilter()}
+function renderUrus(){$("vUrus").innerHTML='<div class="dt"><h2>⚙️ Urus Senarai</h2><p>Tambah atau buang nama guru dan kelas untuk pilihan dropdown. Rekod yang sudah diisi tidak berubah. Disimpan dalam pelayar ini.</p></div><div class="msg">'+esc(uNote)+'</div><div class="g2">'+
+ listCard("👥 Senarai Guru","g",NAMA,"Nama guru baharu")+listCard("🏫 Senarai Kelas","k",KELAS,"cth. 1 Citizen")+'</div>'}
+function saveLists(){data.gl=NAMA.slice();data.kl=KELAS.slice();NN=NAMA.map(function(n){return norm(n).split(" ")});save();if(isOwn&&dbL)dbL.set({gl:NAMA.slice(),kl:KELAS.slice()}).catch(function(){});render();fillKF();refreshFilter()}
 function urAdd(key){var inp=$("in_"+key),v=inp.value.replace(/\s+/g," ").trim();if(!v)return;var L=key==="g"?NAMA:KELAS;
- if(L.some(function(x){return x.toLowerCase()===v.toLowerCase()})){uNote="""+v+"" sudah ada dalam senarai.";renderUrus();return}
+ if(L.some(function(x){return x.toLowerCase()===v.toLowerCase()})){uNote="\""+v+"\" sudah ada dalam senarai.";renderUrus();return}
  L.push(v);if(key==="g")NAMA.sort(function(a,b){return a.localeCompare(b)});
  saveLists();uNote="Ditambah: "+v;renderUrus();var n=$("in_"+key);if(n)n.focus()}
 $("vUrus").addEventListener("click",function(e){var a=e.target.closest("[data-add]"),r=e.target.closest("[data-rm]");
  if(a)urAdd(a.dataset.add);
  else if(r){var L=r.dataset.rm==="g"?NAMA:KELAS,x=L.splice(+r.dataset.i,1)[0];saveLists();uNote="Dibuang: "+x;renderUrus()}});
-$("vUrus").addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.id&&e.target.id.indexOf("in_")===0&&e.target.id!=="in_pin"){e.preventDefault();urAdd(e.target.id.slice(3))}});
+$("vUrus").addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.id&&e.target.id.indexOf("in_")===0){e.preventDefault();urAdd(e.target.id.slice(3))}});
+$("tUrus").onclick=function(){showTab("urus")};
 fillKF();
+var dbL=null,isOwn=false;
+function applyLists(gl,kl){var g=gl&&gl.length?gl:NAMA,k=kl&&kl.length?kl:KELAS;
+ if(JSON.stringify([NAMA,KELAS])===JSON.stringify([g,k]))return;
+ NAMA=g.slice();KELAS=k.slice();NN=NAMA.map(function(n){return norm(n).split(" ")});render();fillKF();refreshFilter();if(!$("vUrus").hidden)renderUrus()}
+(async function(){
+ try{var u=await claude.use("user");isOwn=!!(u&&await u.isOwner())}catch(e){}
+ $("tUrus").hidden=!isOwn;
+ try{var db=await claude.use("db");if(db){dbL=db.doc("config/lists");
+  dbL.onSnapshot(function(s){if(s.exists){var d=s.data()||{};applyLists(d.gl,d.kl)}},function(){})}}catch(e){}
+})();
 
 /* ===== PDF analisis ===== */
 var AN={};
 function hexRgb(h){return [1,3,5].map(function(i){return parseInt(h.substr(i,2),16)})}
 function plain(s){return s.replace(/<[^>]+>/g,"").replace(/&quot;/g,'"').replace(/&lt;/g,"<").replace(/&amp;/g,"&").replace(/—/g,"-")}
 $("pdfA").onclick=function(){
- if(!isAdmin)return;
  if(!getRows().length){msg("Tiada rekod untuk dianalisis mengikut tapisan.");return}
  if(!window.jspdf){msg("Pustaka PDF tidak dapat dimuatkan. Cuba muat semula halaman.");return}
  var doc=new jspdf.jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
@@ -798,7 +514,7 @@ $("pdfA").onclick=function(){
  offer("analisis-pembentukan-karakter-2027.pdf",doc.output("arraybuffer"));
 };
 
-/* ===== PDF borang pelaporan (Untuk Kedua-dua Pengguna & Admin) ===== */
+/* ===== PDF borang pelaporan ===== */
 function fd(s){var a=(s||"").split("-");return a.length===3?a[2]+"/"+a[1]+"/"+a[0]:(s||"")}
 var RGB={"Penyayang":[255,214,224],"Berdaya Tahan":[214,240,208],"Berupaya Memimpin":[217,230,255],"Warganegara Aktif":[255,233,176]};
 document.getElementById("pdf").onclick=function(){
@@ -846,10 +562,7 @@ document.getElementById("pdf").onclick=function(){
   doc.text("Muka surat "+i+" / "+pc,W-12,H-6,{align:"right"})}
  offer("borang-rekod-pembentukan-karakter-2027.pdf",doc.output("arraybuffer"));
 };
-
 render();
-applyRoleUI();
-loadFromCloud(false);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
