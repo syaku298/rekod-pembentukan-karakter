@@ -83,6 +83,25 @@ table.mt1 td select{text-align-last:center}
 .sg div{padding:8px 12px;cursor:pointer;font-size:.92rem}
 .sg div.on,.sg div:hover{background:var(--head)}
 .sg b{color:var(--acc)}
+.mdl-bg{position:fixed;inset:0;background:rgba(45,42,62,.55);z-index:40;display:grid;place-items:center;padding:14px}
+.mdl{background:var(--card);border:1px solid var(--line);border-radius:18px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;padding:18px 20px;box-shadow:0 12px 32px rgba(0,0,0,.22)}
+.mdl h3{margin:0 0 12px;font-size:1.15rem;display:flex;align-items:center;justify-content:space-between}
+.mdl-g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mdl-f{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;font-size:.86rem;font-weight:700}
+.mdl-f input,.mdl-f select,.mdl-f textarea{padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-weight:400}
+.mdl-f input:focus,.mdl-f select:focus,.mdl-f textarea:focus{background:#fff;border-color:var(--acc2);outline:none}
+.mdl-act{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+@media(max-width:480px){.mdl-g{grid-template-columns:1fr}}
+.mod-box{background:linear-gradient(135deg,#fff,#fff5e4);border:2px solid var(--acc);border-radius:16px;padding:14px 16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(255,122,89,.12)}
+.mod-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
+.mod-badge{background:var(--acc);color:#fff;font-size:.78rem;font-weight:800;padding:3px 10px;border-radius:999px}
+.mod-el{font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px}
+.mod-val{background:var(--card);border:1px solid var(--line);font-size:.78rem;font-weight:700;padding:3px 10px;border-radius:999px}
+.mod-amalan{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:8px 0 10px;font-size:.88rem;white-space:pre-line;line-height:1.45}
+.mod-title{font-size:1.1rem;font-weight:800;margin:4px 0}
+.mod-desc{font-size:.9rem;color:var(--ink);margin:4px 0 10px;white-space:pre-line;line-height:1.45}
+.mod-link{display:inline-flex;align-items:center;gap:6px;background:var(--acc2);color:#fff;text-decoration:none;padding:7px 14px;border-radius:10px;font-weight:700;font-size:.86rem}
+.mod-link:hover{opacity:.9}
 </style>
 </head>
 <body>
@@ -95,10 +114,10 @@ table.mt1 td select{text-align-last:center}
   </div>
 </header>
 
-<div class="tabs"><button id="tRekod" class="on">📋 Rekod</button><button id="tAnal" hidden>📊 Analisis Laporan</button><button id="tUrus" hidden>⚙️ Urus Senarai</button><button id="btnAdmin" class="ghost" style="margin-left:auto">🔒 Mod Admin</button></div>
+<div class="tabs"><button id="tRekod" class="on">📋 Rekod</button><button id="tModul" hidden>📚 Modul Mingguan</button><button id="tAnal" hidden>📊 Analisis Laporan</button><button id="tUrus" hidden>⚙️ Urus Senarai</button><button id="btnAdmin" class="ghost" style="margin-left:auto">🔒 Mod Admin</button></div>
+<div id="modulBanner" class="rk" hidden></div>
 <div class="bar rk">
   <button class="add" id="add">＋ Tambah Rekod</button>
-  <button id="saveAll" style="background:#2e9e5b">💾 Simpan Rekod</button>
   <button id="csv">⬇ Eksport CSV</button>
   <button id="xlsx">⬇ Eksport Excel</button>
   <button id="pdf">📄 Muat Turun PDF (Borang)</button>
@@ -118,10 +137,10 @@ table.mt1 td select{text-align-last:center}
 
 <div class="wrap rk">
 <table class="mt1">
-<colgroup><col style="width:44px"><col style="width:112px"><col style="width:90px"><col style="width:200px"><col style="width:110px"><col style="width:95px"><col style="width:150px"><col><col style="width:78px"></colgroup>
+<colgroup><col style="width:44px"><col style="width:112px"><col style="width:90px"><col style="width:200px"><col style="width:110px"><col style="width:95px"><col style="width:150px"><col><col class="adm-col" hidden style="width:78px"></colgroup>
 <thead><tr>
 <th>Bil.</th><th>Tarikh</th><th>Masa</th><th>Guru</th><th>Mata Pelajaran</th><th>Kelas</th>
-<th>Elemen Teras Karakter</th><th>Aktiviti / Catatan</th><th></th>
+<th>Elemen Teras Karakter</th><th>Aktiviti / Catatan</th><th class="adm-col" hidden>Tindakan</th>
 </tr></thead>
 <tbody id="rows"></tbody>
 </table>
@@ -130,9 +149,37 @@ table.mt1 td select{text-align-last:center}
 <div class="msg rk" id="msg"></div>
 <div class="bar" id="aBar" hidden><button id="pdfA">📄 Muat Turun PDF Analisis</button></div>
 <div id="vAnalisis" hidden></div>
-<div id="vUrus" hidden></div>
-
+<div id="vUrus" hidden></div><div id="vModul" hidden></div>
+<div class="mdl-bg" id="mdlRekod" hidden>
+  <div class="mdl" role="dialog" aria-modal="true" aria-labelledby="mdlTitle">
+    <h3><span id="mdlTitle">➕ Tambah Rekod Baharu</span><button type="button" class="del" id="mdlClose" aria-label="Tutup">✕</button></h3>
+    <div class="mdl-g">
+      <label class="mdl-f">Tarikh *<input type="date" id="mTarikh"></label>
+      <label class="mdl-f">Masa *<input type="text" id="mMasa" placeholder="cth. 08:30 AM"></label>
+    </div>
+    <label class="mdl-f">Nama Guru *<input type="text" id="mGuru" autocomplete="off" placeholder="Taip nama guru..."></label>
+    <div class="mdl-g">
+      <label class="mdl-f">Mata Pelajaran *<input type="text" id="mMp" placeholder="cth. Bahasa Melayu"></label>
+      <label class="mdl-f">Kelas *<select id="mKelas"></select></label>
+    </div>
+    <label class="mdl-f">Elemen Teras Karakter *
+      <select id="mElemen">
+        <option value="">— Pilih Elemen —</option>
+        <option>Penyayang</option>
+        <option>Berdaya Tahan</option>
+        <option>Berupaya Memimpin</option>
+        <option>Warganegara Aktif</option>
+      </select>
+    </label>
+    <label class="mdl-f">Aktiviti / Catatan *<textarea rows="3" id="mCatatan" placeholder="Nyatakan aktiviti pembentukan karakter yang dilaksanakan..."></textarea></label>
+    <div class="mdl-act">
+      <button type="button" class="ghost" id="mdlCancel">Batal</button>
+      <button type="button" id="mdlSave" style="background:#2e9e5b">💾 Simpan Rekod</button>
+    </div>
+  </div>
+</div>
 <script>
+var $=function(i){return document.getElementById(i)};
 var KELAS=["1 Alba","1 Bonia","1 Casio","1 Diesel","1 Emporio","1 Fossil","1 Garmin","1 Hublot","1 Longines","1 Montblanc","1 Orient","1 Polo","1 Quartz","1 Rolex","1 Seiko","1 Tissot"];
 var ELEMEN=["Penyayang","Berdaya Tahan","Berupaya Memimpin","Warganegara Aktif"];
 var WARNA={"Penyayang":"var(--c1)","Berdaya Tahan":"var(--c2)","Berupaya Memimpin":"var(--c3)","Warganegara Aktif":"var(--c4)"};
@@ -147,12 +194,17 @@ function applyRoleUI() {
     btn.style.background = isAdmin ? "var(--acc)" : "";
     btn.style.color = isAdmin ? "#fff" : "";
   }
+  $("tModul").hidden = !isAdmin;
   $("tAnal").hidden = !isAdmin;
   $("tUrus").hidden = !isAdmin;
   $("clear").hidden = !isAdmin;
-  if (!isAdmin && (!$("vAnalisis").hidden || !$("vUrus").hidden)) {
+  document.querySelectorAll(".adm-col").forEach(function(el) {
+    el.hidden = !isAdmin;
+  });
+  if (!isAdmin && (!$("vAnalisis").hidden || !$("vUrus").hidden || !$("vModul").hidden)) {
     showTab(false);
   }
+  if (typeof render === "function") render();
 }
 var KEY="rekod-pk-2027", data={rows:[],guru:"",kelas:""};
 try{var s=localStorage.getItem(KEY);if(s)data=JSON.parse(s)}catch(e){}
@@ -205,7 +257,10 @@ function loadFromSheet(){
       KELAS=res.kl.slice();
       data.kl=KELAS.slice();
     }
-    save();fillKF();render();refreshFilter();
+    if(Array.isArray(res.modul)){
+      data.modul=res.modul;
+    }
+    save();fillKF();render();renderModulBanner();refreshFilter();
     msg("Data disegerakkan dari Google Sheet ✓");
   }).catch(function(){msg("Menggunakan data tempatan (gagal sambung ke Google Sheet).")});
 }
@@ -245,73 +300,120 @@ function render(){
   var tb=document.getElementById("rows");
   var idx=[];data.rows.forEach(function(r,j){if(inView(r))idx.push(j)});
   tb.innerHTML=idx.map(function(i,n){var r=data.rows[i];
-    var opts='<option value="">— Pilih —</option>'+ELEMEN.map(function(e){return '<option'+(r.elemen===e?' selected':'')+'>'+e+'</option>'}).join("");
     return '<tr data-i="'+i+'"><td class="n">'+(n+1)+'</td>'+
-    '<td><input type="date" data-f="tarikh" value="'+esc(r.tarikh)+'"></td>'+
-    '<td><input type="text" data-f="masa" value="'+esc(r.masa)+'" placeholder="hh:mm AM" autocomplete="off"></td>'+
-    '<td><input type="text" data-f="guru" autocomplete="off" placeholder="Taip nama guru" value="'+esc(r.guru)+'"></td>'+
-    '<td><input type="text" data-f="matapelajaran" value="'+esc(r.matapelajaran)+'" placeholder="cth. Bahasa Melayu"></td>'+
-    '<td><select data-f="kelas"><option value="">— Pilih —</option>'+(r.kelas&&KELAS.indexOf(r.kelas)<0?KELAS.concat([r.kelas]):KELAS).map(function(k){return '<option'+(r.kelas===k?' selected':'')+'>'+k+'</option>'}).join("")+'</select></td>'+
-    '<td style="background:'+(WARNA[r.elemen]||"transparent")+'"><select data-f="elemen">'+opts+'</select></td>'+
-    '<td><textarea rows="2" data-f="catatan" placeholder="Aktiviti yang dilaksanakan">'+esc(r.catatan)+'</textarea></td>'+
-    '<td style="white-space:nowrap"><button class="del" style="color:#2e9e5b" data-save="'+i+'" title="Simpan baris ini" aria-label="Simpan rekod">💾</button><button class="del" data-del="'+i+'" title="Padam" aria-label="Padam rekod">✕</button></td></tr>';
+    '<td style="padding:9px 6px">'+esc(fd(r.tarikh))+'</td>'+
+    '<td style="padding:9px 6px">'+esc(r.masa)+'</td>'+
+    '<td style="padding:9px 8px;text-align:left">'+esc(r.guru)+'</td>'+
+    '<td style="padding:9px 6px">'+esc(r.matapelajaran)+'</td>'+
+    '<td style="padding:9px 6px">'+esc(r.kelas)+'</td>'+
+    '<td style="padding:9px 6px;font-weight:700;background:'+(WARNA[r.elemen]||"transparent")+'">'+esc(r.elemen)+'</td>'+
+    '<td style="padding:9px 8px;text-align:left;white-space:pre-wrap">'+esc(r.catatan)+'</td>'+
+    (isAdmin ? '<td style="white-space:nowrap"><button class="del" style="color:var(--acc2)" data-edit="'+i+'" title="Sunting rekod" aria-label="Sunting rekod">✏️</button><button class="del" data-del="'+i+'" title="Padam" aria-label="Padam rekod">✕</button></td>' : '')+'</tr>';
   }).join("");
   var em=document.getElementById("empty");em.style.display=idx.length?"none":"block";
-  em.textContent=data.rows.length?(vw.mode==="semua"?"Tiada rekod.":"Tiada rekod untuk paparan ini. Tekan “Tambah Rekod” untuk mula. Rekod hari lain tersimpan — pilih “Semua rekod” atau “Pilih tarikh” untuk melihatnya."):"Belum ada rekod. Tekan “Tambah Rekod” — tarikh dan masa diisi secara automatik.";
+  em.textContent=data.rows.length?(vw.mode==="semua"?"Tiada rekod.":"Tiada rekod untuk paparan ini. Tekan “Tambah Rekod” untuk mula."):"Belum ada rekod. Tekan “Tambah Rekod” untuk mengisi maklumat.";
   refreshFilter();
   var c={};idx.forEach(function(j){var r=data.rows[j];if(r.elemen)c[r.elemen]=(c[r.elemen]||0)+1});
   document.getElementById("stats").innerHTML='<span class="chip" style="background:var(--head)">Jumlah: '+idx.length+'</span>'+
     ELEMEN.map(function(e){return '<span class="chip" style="background:'+WARNA[e]+'">'+e+': '+(c[e]||0)+'</span>'}).join("");
 }
 
-document.getElementById("add").onclick=function(){
-  var nr={id:uid(),tarikh:today(),masa:now(),guru:data.guru||"",matapelajaran:"",kelas:data.kelas||"",elemen:"",catatan:""};
-  data.rows.push(nr);
-  save();queueSync(nr);if($("vMode").value!=="hari"){$("vMode").value="hari";vwUpdate()}else render();msg("Rekod ditambah — tarikh & masa diisi automatik.");
-  var t=document.getElementById("rows").lastElementChild;if(t){var f=t.querySelector('[data-f="matapelajaran"]');if(f)f.focus()}
-};
-var tbody=document.getElementById("rows");
-tbody.addEventListener("input",function(e){
-  var tr=e.target.closest("tr");if(!tr||!e.target.dataset.f)return;
-  var r=data.rows[+tr.dataset.i];r[e.target.dataset.f]=e.target.value;save();queueSync(r);
-});
-tbody.addEventListener("change",function(e){
- var tr=e.target.closest("tr");if(!tr)return;var rr=data.rows[+tr.dataset.i];if(!rr)return;
- if(e.target.dataset.f==="elemen"){render();queueSync(rr)}
- if(e.target.dataset.f==="tarikh"){queueSync(rr);if(!inView(rr)){render();msg("Rekod dipindahkan ke tarikh "+fd(rr.tarikh)+" dan tidak lagi dipaparkan di sini.")}}
- if(e.target.dataset.f==="masa"){var v=fmtT(e.target.value);e.target.value=v;rr.masa=v;save();queueSync(rr)}});
-tbody.addEventListener("click",function(e){
-  var sv=e.target.closest("[data-save]");
-  if(sv){
-    var r=data.rows[+sv.dataset.save];
-    if(!r)return;
-    if(!r.guru||!r.kelas||!r.elemen){
-      alert("Sila lengkapkan Nama Guru, Kelas, dan Elemen Teras Karakter sebelum menyimpan.");
-      return;
-    }
-    clearTimeout(syncTimers[r.id]);
-    save();
-    apiPost({action:"upsert",row:r});
-    alert("Rekod berjaya disimpan dan dihantar ke Google Sheet! ✓");
-    return;
-  }
-  var b=e.target.closest("[data-del]");if(!b)return;
-  if(confirm("Padam rekod ini?")){var rem=data.rows.splice(+b.dataset.del,1)[0];save();render();if(rem&&rem.id)apiPost({action:"delete",id:rem.id})}
+var editIdx = -1;
+function openModal(idx) {
+  editIdx = typeof idx === "number" ? idx : -1;
+  var r = editIdx >= 0 ? data.rows[editIdx] : {
+    tarikh: today(),
+    masa: now(),
+    guru: data.guru || "",
+    matapelajaran: "",
+    kelas: data.kelas || "",
+    elemen: "",
+    catatan: ""
+  };
+  $("mdlTitle").textContent = editIdx >= 0 ? "✏️ Sunting Rekod" : "➕ Tambah Rekod Baharu";
+  $("mKelas").innerHTML = '<option value="">— Pilih Kelas —</option>' + KELAS.map(function(k) {
+    return '<option' + (r.kelas === k ? ' selected' : '') + '>' + esc(k) + '</option>';
+  }).join("");
+  $("mTarikh").value = r.tarikh || today();
+  $("mMasa").value = r.masa || now();
+  $("mGuru").value = r.guru || "";
+  $("mMp").value = r.matapelajaran || "";
+  $("mElemen").value = r.elemen || "";
+  $("mCatatan").value = r.catatan || "";
+  $("mdlRekod").hidden = false;
+  setTimeout(function() { ($("mGuru").value ? $("mMp") : $("mGuru")).focus(); }, 50);
+}
+function closeModal() {
+  $("mdlRekod").hidden = true;
+  sgHide();
+  editIdx = -1;
+}
+
+document.getElementById("add").onclick = function() { openModal(-1); };
+$("mdlClose").onclick = closeModal;
+$("mdlCancel").onclick = closeModal;
+$("mdlRekod").addEventListener("click", function(e) {
+  if (e.target === $("mdlRekod")) closeModal();
 });
 
-document.getElementById("saveAll").onclick=function(){
-  save();
-  var validRows=data.rows.filter(function(r){return r.guru||r.matapelajaran||r.catatan});
-  if(!validRows.length){
-    msg("Tiada rekod untuk disimpan.");
+$("mdlSave").onclick = function() {
+  var tarikh = $("mTarikh").value;
+  var masa = fmtT($("mMasa").value);
+  var guru = $("mGuru").value.trim();
+  var mp = $("mMp").value.trim();
+  var kelas = $("mKelas").value;
+  var elemen = $("mElemen").value;
+  var catatan = $("mCatatan").value.trim();
+
+  if (!tarikh || !masa || !guru || !mp || !kelas || !elemen || !catatan) {
+    alert("Sila lengkapkan semua ruangan bertanda (*) sebelum menyimpan rekod.");
     return;
   }
-  validRows.forEach(function(r){
-    clearTimeout(syncTimers[r.id]);
-    apiPost({action:"upsert",row:r});
-  });
-  alert("Semua rekod ("+validRows.length+") telah disimpan ke Google Sheet! ✓");
+
+  var rowObj;
+  if (editIdx >= 0) {
+    rowObj = data.rows[editIdx];
+    rowObj.tarikh = tarikh;
+    rowObj.masa = masa;
+    rowObj.guru = guru;
+    rowObj.matapelajaran = mp;
+    rowObj.kelas = kelas;
+    rowObj.elemen = elemen;
+    rowObj.catatan = catatan;
+  } else {
+    rowObj = {
+      id: uid(),
+      tarikh: tarikh,
+      masa: masa,
+      guru: guru,
+      matapelajaran: mp,
+      kelas: kelas,
+      elemen: elemen,
+      catatan: catatan
+    };
+    data.rows.push(rowObj);
+  }
+
+  save();
+  apiPost({ action: "upsert", row: rowObj });
+  closeModal();
+  render();
+  alert("Rekod berjaya disimpan dan dihantar ke Google Sheet! ✓");
 };
+
+var tbody = document.getElementById("rows");
+tbody.addEventListener("click", function(e) {
+  var ed = e.target.closest("[data-edit]");
+  if (ed) { openModal(+ed.dataset.edit); return; }
+  var b = e.target.closest("[data-del]");
+  if (!b) return;
+  if (confirm("Padam rekod ini?")) {
+    var rem = data.rows.splice(+b.dataset.del, 1)[0];
+    save();
+    render();
+    if (rem && rem.id) apiPost({ action: "delete", id: rem.id });
+  }
+});
 document.getElementById("clear").onclick=function(){
   if(data.rows.length&&confirm("Kosongkan semua rekod?")){data.rows=[];save();render();apiPost({action:"clear"})}
 };
@@ -437,7 +539,7 @@ function cari(q){var qt=norm(q).split(" ").filter(Boolean);if(!qt.length)return 
 
 var sg=document.createElement("div");sg.className="sg";document.body.appendChild(sg);
 var sgIn=null,sgList=[],sgI=-1;
-function isGuru(el){return el&&el.tagName==="INPUT"&&(el.id==="guru"||el.dataset.f==="guru")}
+function isGuru(el){return el&&el.tagName==="INPUT"&&(el.id==="mGuru"||el.id==="guru"||el.dataset.f==="guru")}
 function sgShow(el){sgIn=el;sgList=cari(el.value);sgI=-1;
  if(!sgList.length){sg.style.display="none";return}
  sg.innerHTML=sgList.map(function(x,i){return'<div data-i="'+i+'">'+esc(x.n)+'</div>'}).join("");
@@ -458,7 +560,6 @@ sg.addEventListener("mousedown",function(e){e.preventDefault();var d=e.target.cl
 window.addEventListener("scroll",sgHide,true);
 document.addEventListener("click",function(e){if(!isGuru(e.target)&&!sg.contains(e.target))sgHide()});
 /* ===== Penapis muat turun ===== */
-var $=function(i){return document.getElementById(i)};
 var BLN=["Januari","Februari","Mac","April","Mei","Jun","Julai","Ogos","September","Oktober","November","Disember"];
 (function(){var t=new Date(),y=t.getFullYear(),ys=[2026,2027,2028];if(ys.indexOf(y)<0){ys.push(y);ys.sort()}
  $("fKelas").innerHTML='<option value="">Semua kelas</option>'+KELAS.map(function(k){return'<option>'+k+'</option>'}).join("");
@@ -533,8 +634,29 @@ function renderAnalOld(){var R=getRows(),v=$("vAnalisis");
  v.innerHTML='<div class="cards"><div class="cd"><b>'+R.length+'</b><span>Jumlah rekod</span></div><div class="cd"><b>'+Object.keys(cg).length+'</b><span>Guru terlibat</span></div><div class="cd"><b>'+ka.length+' / '+KELAS.length+'</b><span>Kelas ada rekod</span></div><div class="cd"><b style="font-size:1.05rem">'+(tot>0?esc(top[0]):"-")+'</b><span>Elemen terbanyak</span></div></div>'+
   '<section class="ac"><h3>💡 Cerapan</h3><ul class="ins">'+ins.map(function(t){return'<li>'+t+'</li>'}).join("")+'</ul></section>'+
   '<div class="ag">'+bars("Rekod mengikut Elemen Teras Karakter",el,BAR)+bars("Rekod mengikut Bulan",bl)+bars("Rekod mengikut Kelas",kl)+bars("Rekod mengikut Guru (10 teratas)",gu.slice(0,10))+bars("Mata Pelajaran (8 teratas)",mp)+'</div>'+hm}
-function showTab(a){var u=a==="urus";a=a===true;$("tUrus").className=u?"on":"";$("vUrus").hidden=!u;document.querySelector(".flt").hidden=u;if(u)renderUrus();document.querySelectorAll(".rk").forEach(function(e){e.hidden=a||u});$("vAnalisis").hidden=!a;$("aBar").hidden=!a;$("tRekod").className=(a||u)?"":"on";$("tAnal").className=a?"on":"";if(a)renderAnal()}
-$("tRekod").onclick=function(){showTab(false)};$("tAnal").onclick=function(){showTab(true)};
+
+function showTab(a){
+  var u = a === "urus";
+  var m = a === "modul";
+  a = a === true;
+  $("tUrus").className = u ? "on" : "";
+  $("tModul").className = m ? "on" : "";
+  $("vUrus").hidden = !u;
+  $("vModul").hidden = !m;
+  document.querySelector(".flt").hidden = u || m;
+  if (u) renderUrus();
+  if (m) renderModulAdmin();
+  document.querySelectorAll(".rk").forEach(function(e){ e.hidden = a || u || m; });
+  $("vAnalisis").hidden = !a;
+  $("aBar").hidden = !a;
+  $("tRekod").className = (a || u || m) ? "" : "on";
+  $("tAnal").className = a ? "on" : "";
+  if (a) renderAnal();
+  if (!a && !u && !m) renderModulBanner();
+}
+$("tRekod").onclick=function(){showTab(false)};
+$("tAnal").onclick=function(){showTab(true)};
+$("tModul").onclick=function(){showTab("modul")};
 
 function renderAnal(){renderAnalOld();var v=$("vAnalisis");if(!getRows().length)return;
  var A=AN,R=A.R,tot=A.tot,sum=A.el.reduce(function(a,x){return a+x[1]},0);
@@ -764,6 +886,153 @@ var W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
   doc.text("Muka surat "+i+" / "+pc,W-12,H-6,{align:"right"})}
  offer("borang-rekod-pembentukan-karakter-2027.pdf",doc.output("arraybuffer"));
 };
+/* ===== Modul Mingguan (5 Medan + Muat Naik PDF) ===== */
+if (!Array.isArray(data.modul)) data.modul = [];
+
+function renderModulBanner() {
+  var box = $("modulBanner");
+  if (!box) return;
+  var aktifList = (data.modul || []).filter(function(m) { return m.aktif; });
+  if (!aktifList.length) { box.hidden = true; box.innerHTML = ""; return; }
+  box.hidden = false;
+  box.innerHTML = aktifList.map(function(m) {
+    var bg = WARNA[m.elemen] || "var(--head)";
+    return '<div class="mod-box">' +
+      '<div class="mod-top">' +
+        '<span class="mod-badge">📚 Modul Minggu Ini</span>' +
+        (m.elemen ? '<span class="mod-el" style="background:' + bg + '">Elemen: ' + esc(m.elemen) + '</span>' : '') +
+        (m.nilai ? '<span class="mod-val">💎 Nilai: ' + esc(m.nilai) + '</span>' : '') +
+      '</div>' +
+      '<div class="mod-title">' + esc(m.tajuk) + '</div>' +
+      (m.amalan ? '<div class="mod-amalan"><b>Senarai Amalan:</b>\n' + esc(m.amalan) + '</div>' : '') +
+      (m.pdfUrl ? '<a class="mod-link" href="' + esc(m.pdfUrl) + '" target="_blank" rel="noopener">📄 Buka Fail PDF Modul' + (m.pdfNama ? ' (' + esc(m.pdfNama) + ')' : '') + '</a>' : '') +
+    '</div>';
+  }).join("");
+}
+
+function renderModulAdmin() {
+  var v = $("vModul");
+  var list = data.modul || [];
+  v.innerHTML =
+    '<div class="dt"><h2>📚 Dashboard Modul Mingguan</h2><p>Isi maklumat modul dan muat naik fail PDF setiap minggu. Modul bertanda <b>Aktif</b> akan terus dipaparkan di halaman utama Mod Lalai.</p></div>' +
+    '<section class="ac">' +
+      '<h3>➕ Muat Naik Modul Baharu</h3>' +
+      '<label class="mdl-f">1. Tajuk Modul *<input type="text" id="modTajuk" placeholder="cth. Minggu 1: Hormati Guru & Rakan"></label>' +
+      '<div class="mdl-g">' +
+        '<label class="mdl-f">2. Elemen Teras *<select id="modElemen"><option value="">— Pilih Elemen Teras —</option>' + ELEMEN.map(function(e){return '<option>'+e+'</option>'}).join("") + '</select></label>' +
+        '<label class="mdl-f">3. Nilai *<input type="text" id="modNilai" placeholder="cth. Hormat-menghormati / Kasih Sayang"></label>' +
+      '</div>' +
+      '<label class="mdl-f">4. Senarai Amalan *<textarea rows="4" id="modAmalan" placeholder="• Memberi salam apabila bertemu guru&#10;• Mendengar dengan teliti semasa rakan bercakap&#10;• Mengucapkan terima kasih"></textarea></label>' +
+      '<label class="mdl-f">5. Fail PDF Modul (Pilihan — Maksimum 15MB)<input type="file" id="modPdfFile" accept="application/pdf" style="background:#fff;padding:8px"></label>' +
+      '<div id="modUploadStatus" style="font-size:.86rem;color:var(--acc);font-weight:700;margin-bottom:8px"></div>' +
+      '<button type="button" class="add" id="btnAddModul" style="background:#2e9e5b">💾 Simpan & Terbitkan Modul</button>' +
+    '</section>' +
+    '<section class="ac">' +
+      '<h3>📋 Senarai Modul (' + list.length + ')</h3>' +
+      (list.length ? list.map(function(m, i) {
+        return '<div class="ui" style="flex-wrap:wrap;padding:10px;border-bottom:1px solid var(--line)">' +
+          '<div style="flex:1;min-width:230px">' +
+            '<div style="font-weight:800;color:var(--acc)">' + esc(m.tajuk) + '</div>' +
+            '<div style="font-size:.84rem;margin:2px 0"><b>Elemen:</b> ' + esc(m.elemen) + ' | <b>Nilai:</b> ' + esc(m.nilai) + '</div>' +
+            (m.amalan ? '<div style="font-size:.83rem;color:var(--mut);white-space:pre-line;margin-top:3px">' + esc(m.amalan) + '</div>' : '') +
+            (m.pdfUrl ? '<div style="font-size:.83rem;margin-top:4px"><a href="' + esc(m.pdfUrl) + '" target="_blank">📄 ' + esc(m.pdfNama || "Lihat PDF") + '</a></div>' : '') +
+          '</div>' +
+          '<div style="display:flex;gap:6px;align-items:center">' +
+            '<button type="button" data-mod-toggle="' + i + '" style="background:' + (m.aktif ? '#2e9e5b' : '#999') + ';font-size:.8rem;padding:5px 10px">' + (m.aktif ? '✅ Papar di Mod Lalai' : '⏸️ Disembunyikan') + '</button>' +
+            '<button type="button" class="del" data-mod-del="' + i + '" title="Padam modul">✕</button>' +
+          '</div>' +
+        '</div>';
+      }).join("") : '<p class="mt">Belum ada modul dimuat naik.</p>') +
+    '</section>';
+
+  $("btnAddModul").onclick = function() {
+    var tajuk = $("modTajuk").value.trim();
+    var elemen = $("modElemen").value;
+    var nilai = $("modNilai").value.trim();
+    var amalan = $("modAmalan").value.trim();
+    var fileInput = $("modPdfFile");
+    var file = fileInput && fileInput.files ? fileInput.files[0] : null;
+
+    if (!tajuk || !elemen || !nilai || !amalan) {
+      alert("Sila lengkapkan Tajuk, Elemen Teras, Nilai, dan Senarai Amalan.");
+      return;
+    }
+
+    function simpanModulObj(pdfUrl, pdfNama) {
+      data.modul.unshift({
+        id: uid(),
+        tajuk: tajuk,
+        elemen: elemen,
+        nilai: nilai,
+        amalan: amalan,
+        pdfUrl: pdfUrl || "",
+        pdfNama: pdfNama || "",
+        aktif: true
+      });
+      save();
+      apiPost({ action: "saveModul", modul: data.modul });
+      renderModulAdmin();
+      renderModulBanner();
+      alert("Modul mingguan berjaya diterbitkan! ✓");
+    }
+
+    if (file) {
+      if (file.size > 15 * 1024 * 1024) {
+        alert("Saiz fail PDF terlalu besar (had maksimum 15MB).");
+        return;
+      }
+      var btn = $("btnAddModul");
+      btn.disabled = true;
+      $("modUploadStatus").textContent = "⏳ Sedang memuat naik fail PDF ke Google Drive...";
+      var reader = new FileReader();
+      reader.onload = function() {
+        var b64 = reader.result.split(",")[1];
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "uploadPdf", fileName: file.name, base64: b64 })
+        }).then(function(r) { return r.json(); }).then(function(res) {
+          btn.disabled = false;
+          $("modUploadStatus").textContent = "";
+          if (res && res.status === "ok") {
+            simpanModulObj(res.url, res.name || file.name);
+          } else {
+            alert("Gagal memuat naik PDF: " + (res && res.message || "Ralat pelayan"));
+          }
+        }).catch(function() {
+          btn.disabled = false;
+          $("modUploadStatus").textContent = "";
+          alert("Gagal menyambung ke Google Drive untuk muat naik PDF.");
+        });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      simpanModulObj("", "");
+    }
+  };
+}
+
+$("vModul").addEventListener("click", function(e) {
+  var tg = e.target.closest("[data-mod-toggle]");
+  if (tg) {
+    var idx = +tg.dataset.modToggle;
+    data.modul[idx].aktif = !data.modul[idx].aktif;
+    save();
+    apiPost({ action: "saveModul", modul: data.modul });
+    renderModulAdmin();
+    renderModulBanner();
+    return;
+  }
+  var dl = e.target.closest("[data-mod-del]");
+  if (dl && confirm("Padam modul ini?")) {
+    data.modul.splice(+dl.dataset.modDel, 1);
+    save();
+    apiPost({ action: "saveModul", modul: data.modul });
+    renderModulAdmin();
+    renderModulBanner();
+  }
+});
+renderModulBanner();
 applyRoleUI();
 render();
 loadFromSheet();
