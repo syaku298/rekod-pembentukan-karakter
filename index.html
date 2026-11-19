@@ -311,7 +311,12 @@ function render(){
     (isAdmin ? '<td style="white-space:nowrap"><button class="del" style="color:var(--acc2)" data-edit="'+i+'" title="Sunting rekod" aria-label="Sunting rekod">✏️</button><button class="del" data-del="'+i+'" title="Padam" aria-label="Padam rekod">✕</button></td>' : '')+'</tr>';
   }).join("");
   var em=document.getElementById("empty");em.style.display=idx.length?"none":"block";
-  em.textContent=data.rows.length?(vw.mode==="semua"?"Tiada rekod.":"Tiada rekod untuk paparan ini. Tekan “Tambah Rekod” untuk mula."):"Belum ada rekod. Tekan “Tambah Rekod” untuk mengisi maklumat.";
+  var selGuru = $("fGuru") ? $("fGuru").value : "";
+  if (!isAdmin && !selGuru) {
+    em.textContent = "👆 Sila pilih nama anda pada ruangan tapisan “Guru” di atas untuk memaparkan rekod anda.";
+  } else {
+    em.textContent = data.rows.length ? (vw.mode==="semua" ? "Tiada rekod untuk " + (selGuru || "paparan ini") + "." : "Tiada rekod untuk paparan ini. Tekan “Tambah Rekod” untuk mula.") : "Belum ada rekod. Tekan “Tambah Rekod” untuk mengisi maklumat.";
+  }
   refreshFilter();
   var c={};idx.forEach(function(j){var r=data.rows[j];if(r.elemen)c[r.elemen]=(c[r.elemen]||0)+1});
   document.getElementById("stats").innerHTML='<span class="chip" style="background:var(--head)">Jumlah: '+idx.length+'</span>'+
@@ -324,7 +329,7 @@ function openModal(idx) {
   var r = editIdx >= 0 ? data.rows[editIdx] : {
     tarikh: today(),
     masa: now(),
-    guru: data.guru || "",
+    guru: ($("fGuru") && $("fGuru").value) || data.guru || "",
     matapelajaran: "",
     kelas: data.kelas || "",
     elemen: "",
@@ -587,7 +592,8 @@ function refreshFilter(){var g=$("fGuru"),cur=g.value,set={};
 NAMA.forEach(function(n){if(n)set[n]=1});
  data.rows.forEach(function(r){var n=(r.guru||"").trim();if(n)set[n]=1});
  var names=Object.keys(set).sort();
- g.innerHTML='<option value="">Semua guru</option>'+names.map(function(n){return'<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join("");
+ var defaultLbl = isAdmin ? "Semua guru" : "— Pilih Nama Guru —";
+ g.innerHTML='<option value="">'+defaultLbl+'</option>'+names.map(function(n){return'<option value="'+esc(n)+'">'+esc(n)+'</option>'}).join("");
  g.value=names.indexOf(cur)>=0?cur:"";
  var tp=$("fTempoh").value;$("fHari").hidden=!(tp==="hari"||tp==="minggu");$("fBulan").hidden=tp!=="bulan";
  $("fHint").textContent=tp==="minggu"?"(pilih mana-mana tarikh dalam minggu itu; Isnin–Ahad)":"";
@@ -684,6 +690,8 @@ function inView(r){
     if(r.tarikh!==target)return false;
   }
   var elG=document.getElementById("fGuru");
+  var g=elG?elG.value:"";
+  if(!isAdmin && !g) return false;
   var elK=document.getElementById("fKelas");
   var elTp=document.getElementById("fTempoh");
   var elT=document.getElementById("fTarikh");
