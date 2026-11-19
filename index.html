@@ -857,9 +857,57 @@ var W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
  doc.text("Tarikh dijana: "+p(n.getDate())+"/"+p(n.getMonth()+1)+"/"+n.getFullYear(),12,33);
  doc.text("Jumlah rekod: "+R.length,W-12,33,{align:"right"});
  doc.text(filterDesc(),12,38);
+
+ var nextY = 42;
+ var aktifModul = (data.modul || []).filter(function(m) { return m.aktif; });
+ if (aktifModul.length) {
+   aktifModul.forEach(function(m) {
+     var tajukText = String(m.tajuk || "-").toUpperCase();
+     var elemenText = "Elemen teras: " + (m.elemen || "-");
+     var nilaiText = "Nilai: " + (m.nilai || "-");
+     var amalanLines = doc.splitTextToSize("Senarai amalan:\n" + (m.amalan || "-"), W - 30);
+
+     var boxHeight = 20 + (amalanLines.length * 4.2);
+     if (nextY + boxHeight > H - 20) {
+       doc.addPage();
+       nextY = 16;
+     }
+
+     // Kotak latar lembut berbingkai oren lembut
+     doc.setFillColor(255, 248, 236);
+     doc.setDrawColor(255, 122, 89);
+     doc.setLineWidth(0.35);
+     doc.roundedRect(12, nextY, W - 24, boxHeight, 2, 2, "FD");
+
+     var cy = nextY + 6;
+     // 1. TAJUK MODUL (Huruf besar, tebal & saiz lebih besar - 11pt)
+     doc.setTextColor(217, 74, 42);
+     doc.setFont("helvetica", "bold");
+     doc.setFontSize(11);
+     doc.text(tajukText, 16, cy);
+     cy += 5.5;
+
+     // 2. Elemen teras
+     doc.setTextColor(45, 42, 62);
+     doc.setFont("helvetica", "bold");
+     doc.setFontSize(9);
+     doc.text(elemenText, 16, cy);
+     cy += 4.5;
+
+     // 3. Nilai
+     doc.text(nilaiText, 16, cy);
+     cy += 4.5;
+
+     // 4. Senarai amalan
+     doc.setFont("helvetica", "normal");
+     doc.text(amalanLines, 16, cy);
+
+     nextY += boxHeight + 5;
+   });
+ }
+
  var body=R.map(function(r,i){return [i+1,fd(r.tarikh),r.masa||"",r.guru||"",r.matapelajaran||"",r.kelas||"",r.elemen||"",r.catatan||""]});
- doc.autoTable({startY:42,margin:{left:12,right:12,bottom:14},head:[HEAD],body:body,theme:"grid",
-  styles:{fontSize:8.5,cellPadding:2,lineColor:[190,190,190],lineWidth:.2,valign:"middle",textColor:[45,42,62]},
+ doc.autoTable({startY:nextY,margin:{left:12,right:12,bottom:14},head:[HEAD],body:body,theme:"grid",  styles:{fontSize:8.5,cellPadding:2,lineColor:[190,190,190],lineWidth:.2,valign:"middle",textColor:[45,42,62]},
   headStyles:{fillColor:[255,122,89],textColor:255,halign:"center"},
   columnStyles:{0:{halign:"center",cellWidth:10},1:{cellWidth:22},2:{cellWidth:14,halign:"center"},3:{cellWidth:48},4:{cellWidth:34},5:{cellWidth:20},6:{cellWidth:34}},
   didParseCell:function(h){if(h.section==="body"&&h.column.index===6&&RGB[h.cell.raw])h.cell.styles.fillColor=RGB[h.cell.raw]}});
